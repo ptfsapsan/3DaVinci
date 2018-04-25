@@ -1,106 +1,66 @@
 <?php
 
+namespace Db;
+
+include_once ZF . '/zend-db/src/Exception/ExceptionInterface.php';
+include_once ZF . '/zend-db/src/Adapter/Exception/ExceptionInterface.php';
+include_once ZF . '/zend-db/src/Exception/ErrorException.php';
+include_once ZF . '/zend-db/src/Adapter/Exception/ErrorException.php';
+include_once ZF . '/zend-db/src/Exception/RuntimeException.php';
+include_once ZF . '/zend-db/src/Adapter/Exception/RuntimeException.php';
+include_once ZF . '/zend-db/src/Exception/InvalidArgumentException.php';
+include_once ZF . '/zend-db/src/Adapter/Exception/InvalidArgumentException.php';
+include_once ZF . '/zend-db/src/Exception/UnexpectedValueException.php';
+include_once ZF . '/zend-db/src/Adapter/Exception/UnexpectedValueException.php';
+include_once ZF . '/zend-db/src/Adapter/Exception/InvalidQueryException.php';
+include_once ZF . '/zend-db/src/ResultSet/ResultSetInterface.php';
+include_once ZF . '/zend-db/src/ResultSet/AbstractResultSet.php';
+include_once ZF . '/zend-db/src/ResultSet/ResultSet.php';
+include_once ZF . '/zend-db/src/Adapter/Platform/PlatformInterface.php';
+include_once ZF . '/zend-db/src/Adapter/Platform/AbstractPlatform.php';
+include_once ZF . '/zend-db/src/Adapter/Platform/Mysql.php';
+include_once ZF . '/zend-db/src/Adapter/Profiler/ProfilerAwareInterface.php';
+include_once ZF . '/zend-db/src/Adapter/AdapterInterface.php';
+include_once ZF . '/zend-db/src/Adapter/Adapter.php';
+include_once ZF . '/zend-db/src/Adapter/Driver/ResultInterface.php';
+include_once ZF . '/zend-db/src/Adapter/Driver/Mysqli/Result.php';
+include_once ZF . '/zend-db/src/Adapter/StatementContainerInterface.php';
+include_once ZF . '/zend-db/src/Adapter/Driver/StatementInterface.php';
+include_once ZF . '/zend-db/src/Adapter/Driver/Mysqli/Statement.php';
+include_once ZF . '/zend-db/src/Adapter/Driver/DriverInterface.php';
+include_once ZF . '/zend-db/src/Adapter/Driver/Mysqli/Mysqli.php';
+include_once ZF . '/zend-db/src/Adapter/Driver/ConnectionInterface.php';
+include_once ZF . '/zend-db/src/Adapter/Driver/AbstractConnection.php';
+include_once ZF . '/zend-db/src/Adapter/Driver/Mysqli/Connection.php';
+
+use Zend\Db\Adapter\Adapter;
+use Zend\Db\Adapter\AdapterAbstractServiceFactory;
+use Zend\Db\Adapter\Driver\Mysqli\Connection;
+use Zend\Db\Adapter\Driver\Mysqli\Mysqli;
+
 class Db
 {
-    /** @var mysqli  */
-    protected static $db;
-    /** @var string  */
-    protected static $placeholderSymbol = '?';
 
+    private $adapter;
 
-    /**
-     * @param string $query
-     * @param mixed $params
-     * @return string
-     */
-    public static function getQuery(string $query, $params = null) {
-        $db = DbConnection::getDb();
-        if (empty($params)) {
-            return $query;
-        }
-        if (!is_array($params)) {
-            $params = [$params];
-        }
-        foreach ($params as $param) {
-            $pos = strpos($query, self::$placeholderSymbol);
-            $arg = "'" . $db->real_escape_string($param) . "'";
-            $query = substr_replace($query, $arg, $pos, strlen(self::$placeholderSymbol));
-        }
-        return $query;
-    }
-
-    /**
-     * @param string $query
-     * @param mixed $params
-     * @return bool|mixed
-     */
-    public static function query(string $query, $params = false) {
-        $db = DbConnection::getDb();
-        $success = $db->query(self::getQuery($query, $params));
-        if (!$success) {
-            return false;
-        }
-        return $db->insert_id === 0 ? true : $db->insert_id;
-    }
-
-    /**
-     * @param string $query
-     * @param mixed $params
-     * @return array|bool
-     */
-    public static function fetchAll(string $query, $params = false) {
-        $result_set = self::getResultSet($query, $params);
-
-        return $result_set ? self::resultSetToArray($result_set) : false;
-    }
-
-    /**
-     * @param $query
-     * @param mixed $params
-     * @return array|bool
-     */
-    public static function fetchRow(string $query, $params = false) {
-        $result_set = self::getResultSet($query, $params);
-
-        return $result_set->num_rows != 1 ? false : $result_set->fetch_assoc();
-    }
-
-    /**
-     * @param string $query
-     * @param mixed $params
-     * @return mixed
-     */
-    public static function fetchOne(string $query, $params = false) {
-        $result_set = self::getResultSet($query, $params);
-        if ((!$result_set) || ($result_set->num_rows != 1)) {
-            return false;
-        } else {
-            $arr = array_values($result_set->fetch_assoc());
-            return $arr[0];
-        }
-    }
-
-    private static function getResultSet(string $query, $params = false)
+    public function __construct()
     {
-        $db = DbConnection::getDb();
-        return $db->query(self::getQuery($query, $params));
+        $this->adapter = new Adapter([
+            'driver' => 'Mysqli',
+            'host' => 'localhost',
+            'user' => 'root',
+            'pass' => '1123',
+            'dbname' => 'test',
+            'port' => NULL,
+            'socket' => NULL,
+        ]);
+
     }
 
-    /**
-     * @param mysqli_result $result_set
-     * @return array
-     */
-    private static function resultSetToArray(mysqli_result $result_set) {
-        $array = [];
-        while (($row = $result_set->fetch_assoc()) != false) {
-            $array[] = $row;
-        }
-        return $array;
+
+    public function getAdapter()
+    {
+        return $this->adapter;
     }
 
-    public function __destruct() {
-        if (self::$db) {
-            self::$db->close();
-        }
-    }
 }

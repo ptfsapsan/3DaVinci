@@ -15,6 +15,12 @@ class ComposerStaticInit0eac5a3f20a2a255b354c6503bde351a
         array (
             'phpDocumentor\\Reflection\\' => 25,
         ),
+        'Z' => 
+        array (
+            'Zend\\Stdlib\\' => 12,
+            'Zend\\Db\\' => 8,
+            'Zend\\Console\\' => 13,
+        ),
         'W' => 
         array (
             'Webmozart\\Assert\\' => 17,
@@ -32,6 +38,18 @@ class ComposerStaticInit0eac5a3f20a2a255b354c6503bde351a
             0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
             1 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
             2 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+        ),
+        'Zend\\Stdlib\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-stdlib/src',
+        ),
+        'Zend\\Db\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-db/src',
+        ),
+        'Zend\\Console\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zendframework/zend-console/src',
         ),
         'Webmozart\\Assert\\' => 
         array (

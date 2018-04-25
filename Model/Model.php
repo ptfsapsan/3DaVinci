@@ -1,10 +1,43 @@
 <?php
 
+namespace Model;
+
+use Db\Db;
+
 class Model
 {
+
+    public function init()
+    {
+        $db = new Db();
+        $adapter = $db->getAdapter();
+
+        $tests = $adapter->query("SELECT * FROM `tests` LIMIT 2");
+        var_dump($tests);
+
+//        try {
+//            $row = $adapter->query("SELECT * FROM `user` LIMIT 1");
+//            var_dump($row);
+//            return;
+//        } catch (\Exception $e) {
+//            echo $e->getMessage();
+//        }
+
+        try {
+            $adapter->query("CREATE TABLE `user` (
+              `github_id` int(11) UNSIGNED NOT NULL,
+              `github_login` varchar(255) NOT NULL,
+              PRIMARY KEY (github_id)
+            ) ENGINE=InnoDB;");
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
+
     /**
-     * @return array
-     * @throws Exception
+     * @return mixed
+     * @throws \Exception
      */
     public static function getDataFromGithub()
     {
@@ -32,7 +65,7 @@ class Model
     /**
      * @param array $users
      */
-    public static function addUsers(array $users)
+    public static function addUser(User $users)
     {
         $dbUsers = array_column(User::getAllUsers(), 'github_login', 'github_id');
 

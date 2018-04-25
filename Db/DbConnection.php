@@ -10,7 +10,7 @@ class DbConnection
         'host' => 'localhost',
         'user' => 'root',
         'pass' => '1123',
-        'DbTest' => 'test',
+        'db' => 'test',
         'port' => NULL,
         'socket' => NULL,
     ];
